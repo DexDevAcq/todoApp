@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+     <script src="./scritps/main.js" type="module" defer></script>
+    <title>Todo App</title>
+</head>
+<body>
+    <main>
+       <div class="wrapper">
+           <div class="todo-input">
+               <h2>TodoMVC</h2>
+                <form>
+                    <input type="text" placeholder="What's need to be done?" id="userInput">
+                    <button type="submit" class="add-btn">Add todo</button>
+                </form>
+           </div>
+
+           <div class="tasks-list">
+               
+                <ul class="todo-list">
+                  
+                </ul>
+           </div>
+
+            <section class="footer-section">
+                <footer class="footer">
+                    <p>Filter buttons</p>
+                    <ul class="filters">
+                        <li><button class="left-btn">Active</button></li>
+                        <li><button class="center-btn">All</button></li>
+                        <li><button class="right-btn">Completed</button></li>
+                    </ul>
+                    <button class="bottom-btn" id="bottom-btn">Clear All complete</button>
+                </footer>
+            </section>
+       </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400&family=Roboto:wght@300&display=swap');
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+}
+
+main {
+    margin: 0 auto;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif;
+}
+
+
+div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+li p {
+    cursor: pointer;
+}
+
+.wrapper {
+    width: 90%;
+    height: 90%;
+    background: #3450A1;
+}
+
+
+
+.todo-input {
+    margin: 20px;
+}
+
+.todo-input h2{
+    color: #9593F6;
+    opacity: .7;
+    font-size: 40px;
+    margin: 10px;
+}
+
+.todo-input input {
+    width: 420px;
+    padding: 15px;
+    border-radius: 25px;
+    border: none;
+    font-size: 15px;
+    background: #6967C9;
+    margin-left: 70px;
+}
+
+.todo-input input:focus {
+    color: white;
+    outline: none;
+}
+
+.todo-input button {
+    margin: 15px;
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid  #EB06FF;
+    color: #EB06FF;
+    background: none;
+    cursor: pointer;
+}
+
+.todo-input form {
+    display: flex;
+}
+::placeholder {
+    color: white;
+    opacity: .7;
+    font-family: 'Montserrat', sans-serif;
+}
+
+
+.tasks-list {
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+.todo-list {
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+.todo-list li button {
+    margin-left: 20px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid;
+    cursor: pointer;
+}
+
+
+.todo-list .del-btn {
+    margin-left: 20px;
+}
+
+.todo {
+    flex-direction: row;
+    width: 400px;
+    background: #041955;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    margin: 10px;
+    border-radius: 30px;
+    color: white;
+}
+
+
+.completed p{
+    text-decoration:line-through ;
+}
+
+
+.completed {
+    opacity: 0.7;
+}
+
+.todo input[type=checkbox] {
+    margin: 15px;
+    border-radius:  100%;
+    border: 1px solid #EB06FF;
+    cursor: pointer;
+}
+
+.footer-section {
+ margin: 20px;
+}
+
+.footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+}
+
+.footer .filters {
+    display: flex;
+
+}
+
+.footer .filters li {
+    list-style: none;
+}
+
+.footer .filters li button, .footer button {
+    border: none;
+    margin: 10px;
+    padding: 10px;
+    width: 120px;
+    background: none;
+    color: white;
+    cursor: pointer;
+    background: #195DCB;
+    transition: .5s;
+    border: 2px solid #195DCB;
+
+}
+
+.footer .filters li button:hover {
+    background: none;
+}
+
+
+.left-btn {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+.right-btn{
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+
+.footer-section {
+    display: none;
+}
+
+.edit-field {
+    padding: 10px;
+    background-color: #041955;
+    color: white;
+    border-radius: 20px;
+    border: 1px solid;
+}
+
+
+.bottom-btn {
+    display: none;
+}
