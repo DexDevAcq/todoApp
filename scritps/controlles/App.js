@@ -23,9 +23,8 @@ function App() {
 }
 
 
-App.prototype.getLocalStorage = function() {
-    let reference = localStorage.getItem("todoList")
-    return JSON.parse(reference)
+App.prototype.getLocalStorage = function() { 
+    return (JSON.parse(localStorage.getItem("todoList"))) || []
 
 }
 
@@ -189,13 +188,22 @@ App.prototype.showBtnAllClear = function() {
     if(oneChecked) {
         clearAllBtn.style.display = "block";
         clearAllBtn.addEventListener("click", function() {
-            this.clearAllComplete()
-            clearAllBtn.style.display = "none";
-            if(this.todoList.length) {
-                section.style.display = "block"
-            } else {
-                section.style.display = "none"
-            }
+
+            this.view.createModalWindow().then(function() {
+                this.clearAllComplete()
+                clearAllBtn.style.display = "none";
+                if(this.todoList.length) {
+                    section.style.display = "block"
+                } else {
+                    section.style.display = "none"
+                }
+                const wrapper = document.getElementById("mdl-wrapper");
+                wrapper.replaceChildren()
+            }.bind(this)).catch(function(e) {
+                console.log(e)
+                const wrapper = document.getElementById("mdl-wrapper");
+                wrapper.replaceChildren()
+            });
 
         }.bind(this))
     } else {

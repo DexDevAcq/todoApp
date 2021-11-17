@@ -8,6 +8,7 @@ function View(rootElement, listners) {
 
 
 
+
 View.prototype.render = function(todos, flag){
     this.clear();
     const fragment = document.createDocumentFragment();
@@ -100,7 +101,17 @@ View.prototype.render = function(todos, flag){
             button.classList.add("del-btn");
             button.insertAdjacentText("afterbegin", "Del");
             button.addEventListener("click", function() {
-                this.deleteTodo(todo.id);
+                const delFunc =  this.deleteTodo;
+
+                this.createModalWindow().then(function() {
+                    delFunc(todo.id);
+                    const wrapper = document.getElementById("mdl-wrapper");
+                    wrapper.replaceChildren()
+                }).catch(function(e) {
+                    console.log(e)
+                    const wrapper = document.getElementById("mdl-wrapper");
+                    wrapper.replaceChildren()
+                });
             }.bind(this));
     
     
@@ -179,6 +190,57 @@ View.prototype.render = function(todos, flag){
 
 View.prototype.clear = function() {
     this.root.replaceChildren();
+}
+
+
+View.prototype.createModalWindow = function(todoId) {
+    const main = document.getElementById("main-window");
+
+    const wrapper = document.getElementById("mdl-wrapper");
+    wrapper.replaceChildren()
+
+
+    const modal = document.createElement("div");
+    modal.classList.add("modal-window");
+
+    const icon = document.createElement("div");
+    icon.classList.add("win-icon");
+
+    const h1 = document.createElement("h1");
+    h1.insertAdjacentText("afterbegin", "Are you sure?")
+
+    const modalBtns = document.createElement("div");
+    modalBtns.classList.add("modal-btns")
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.insertAdjacentText("afterbegin", "Delete")
+    deleteBtn.classList.add("modal-btn");
+    deleteBtn.classList.add("delete");
+
+    const declineBtn = document.createElement("button");
+    declineBtn.classList.add("modal-btn");
+    declineBtn.classList.add("decline");
+    declineBtn.insertAdjacentText("afterbegin", "Decline")
+
+    modalBtns.appendChild(deleteBtn);
+    modalBtns.appendChild(declineBtn);
+
+    icon.appendChild(h1);
+    icon.appendChild(modalBtns);
+
+
+    wrapper.appendChild(modal);
+    wrapper.appendChild(icon)
+
+    return new Promise(function(resolve, reject) {
+        deleteBtn.addEventListener("click", function() {
+            resolve()
+        })
+        declineBtn.addEventListener("click", function() {
+            reject()
+        })
+    })
+
 }
 
 

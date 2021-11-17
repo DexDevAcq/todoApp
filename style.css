@@ -85,6 +85,7 @@ li p {
 .todo-input form {
     display: flex;
 }
+
 ::placeholder {
     color: white;
     opacity: .7;
@@ -210,4 +211,73 @@ li p {
 
 .bottom-btn {
     display: none;
+}
+
+
+.modal-window {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    background: black;
+    z-index: 3;
+    opacity: .7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.win-icon {
+    z-index: 4;
+    position: absolute;
+    margin: auto auto;
+    background: white;
+    width: 500px;
+    height: 400px;
+    border-radius: 15px;
+    color: #041955;
+    
+}
+
+.modal-btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.modal-btn {
+    margin: 30px 15px;
+    padding: 10px;
+    width: 120px;
+    border-radius: 7px;
+    border: 1px solid #195DCB;
+    color: white;
+    letter-spacing: 1px;
+    transition: .5s;
+    cursor: pointer;
+    background: white;
+}
+
+.delete {
+    background: #195DCB;
+}
+
+
+.delete:hover {
+    background: white;
+    color: #195DCB;
+}
+
+.decline {
+    color: #EB06FF;
+    border: 1px solid #EB06FF;
+}
+
+.decline:hover {
+    color: white;
+    background: #EB06FF;
+}
+
+.modal-wrapper {
+    position: absolute;
 }
