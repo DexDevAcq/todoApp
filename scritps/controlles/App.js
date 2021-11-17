@@ -44,7 +44,7 @@ App.prototype.init = function() {
     
     this.showBtnAllClear()
 
-    this.LocalStorageSetItem(this.todoList, "all")
+    this.LocalStorageSetItem(this.todoList)
 
 
     form.addEventListener("submit", function(e) {
@@ -74,9 +74,9 @@ App.prototype.init = function() {
 }
 
 
-App.prototype.LocalStorageSetItem = function(list, flag) {
+App.prototype.LocalStorageSetItem = function(list) {
     localStorage.setItem("todoList", JSON.stringify(list))
-    this.view.render(list, flag);
+    this.view.render(list);
 }
 
 
@@ -88,7 +88,7 @@ App.prototype.addTodo = function(inputValue) {
         checked: todoInst.checked
     }
     this.todoList.unshift(todo)
-    this.LocalStorageSetItem(this.todoList, "all")
+    this.LocalStorageSetItem(this.todoList)
    
 }
 
@@ -103,7 +103,7 @@ App.prototype.deleteTodo = function(todoId) {
         section.style.display = "none";
     }
     this.showBtnAllClear();
-    this.LocalStorageSetItem(this.todoList, "all")
+    this.LocalStorageSetItem(this.todoList)
 }
 
 
@@ -126,7 +126,7 @@ App.prototype.toggleTodo = function(todoId) {
     })
     this.todoList = newList;
     this.showBtnAllClear();
-    this.LocalStorageSetItem(this.todoList, "all")
+    this.LocalStorageSetItem(this.todoList)
     
 }
 
@@ -146,27 +146,48 @@ App.prototype.editTodo = function(textToEdit, todoId) {
             return todo
         }
     })
-    this.LocalStorageSetItem(this.todoList, "all")
+    this.LocalStorageSetItem(this.todoList)
 }
 
 
 App.prototype.clickFilters = function(){
     const filterBtns = document.querySelector("ul.filters");
     filterBtns.addEventListener("click", function(e) {
-        // console.log(e.target.classList[0])
+        let filteredList = [];
         if(e.target.classList[0] === "left-btn") {
-            let notCompletedTasks = this.showActive();
-            return this.LocalStorageSetItem(notCompletedTasks, "not-completed");
+            let activeList = this.showActive();
+            filteredList = [...activeList]
         } else if(e.target.classList[0] === "center-btn") {
-            let allTodos = this.showAll();
-            return this.LocalStorageSetItem(allTodos, "all");
+            console.log('all')
+            filteredList = this.showAll();
         } else if (e.target.classList[0] === "right-btn") {
-            let completedTodos = this.showCompleted();
-            return this.LocalStorageSetItem(completedTodos, "completed");
+            console.log('comp')
+            let completedList =  this.showCompleted();
+            filteredList = [...completedList]
         }
+
+        return this.view.render(filteredList);
 
     }.bind(this))
 
+}
+
+
+App.prototype.showActive = function() {
+    return this.todoList.filter(function(todo) {
+        return !todo.checked;
+    })
+}
+
+App.prototype.showAll = function() {
+    let allTodos = this.todoList;
+    return allTodos;
+}
+
+App.prototype.showCompleted = function() {
+    return this.todoList.filter(function(todo) {
+        return todo.checked;
+    })
 }
 
 
@@ -211,21 +232,6 @@ App.prototype.showBtnAllClear = function() {
     }
 }
 
-App.prototype.showActive = function() {
-    return this.todoList.filter(function(todo) {
-        return !todo.checked;
-    })
-}
 
-App.prototype.showAll = function() {
-    let allTodos = this.todoList;
-    return allTodos;
-}
-
-App.prototype.showCompleted = function() {
-    return this.todoList.filter(function(todo) {
-        return todo.checked;
-    })
-}
 
 export default App;
