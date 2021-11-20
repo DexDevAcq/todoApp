@@ -5,8 +5,10 @@ const listElement = document.querySelector("ul.todo-list");
 
 function App() {
 
-    this.todos = this.getLocalStorage();
-    this.todoList = [...this.todos];
+    this.renderState = this.getLocalStorageState();
+    this.compList = [...this.getLocalStorageCompletedList()];
+    this.actList = [...this.getLocalStorageActiveList()]
+    this.todoList = [...this.getLocalStorageTodos()];
     this.listners = {
         delTodo: (function(id) {
             this.deleteTodo(id);
@@ -16,16 +18,55 @@ function App() {
         }).bind(this),
         editTodo: (function(textToEdit, id) {
             this.editTodo(textToEdit, id);
+        }).bind(this),
+        switchTodos: (function(firstIndex, secondIndex, list) {
+            this.switchTodos(firstIndex, secondIndex, list)
         }).bind(this)
     };
 
     this.view = new View(listElement, this.listners)
 }
 
+App.prototype.switchTodos = function(fId, sId) {
+    
 
-App.prototype.getLocalStorage = function() { 
+    function swap(input, index_A, index_B) {
+        let temp = input[index_A];
+
+        input[index_A] = input[index_B];
+        input[index_B] = temp;
+
+        return input
+    }
+
+    let kekList;
+    let allList = swap(this.todoList, fId, sId)
+    let swappedCompletList = swap(this.compList, fId, sId)
+    let swappedActiveList = swap(this.actList, fId, sId)
+
+    this.LocalStorageSetItemAndRender()
+
+
+}
+App.prototype.getLocalStorageCompletedList = function() { 
+    return (JSON.parse(localStorage.getItem("completedList"))) || []
+
+}
+
+App.prototype.getLocalStorageActiveList = function() { 
+    return (JSON.parse(localStorage.getItem("activeList"))) || []
+
+}
+
+
+
+App.prototype.getLocalStorageTodos = function() { 
     return (JSON.parse(localStorage.getItem("todoList"))) || []
 
+}
+
+App.prototype.getLocalStorageState = function() {
+    return (JSON.parse(localStorage.getItem("renderState"))) || "All"
 }
 
 
@@ -42,17 +83,16 @@ App.prototype.init = function() {
         section.style.display = "none";
     }
     
-    this.showBtnAllClear()
+    this.showBtnAllClear();
+    this.makeAllChecked();
 
-    this.LocalStorageSetItem(this.todoList)
+    this.LocalStorageSetItemAndRender()
 
 
     form.addEventListener("submit", function(e) {
         const inputValue = document.getElementById("userInput").value;
-        // const text = inputValue.replace(/\s+/g, '')
         const text = inputValue.trim();
         if(text){
-            console.log("input: ", text.length, text.trim().length)
             e.target.reset()
             e.preventDefault()
             this.addTodo(text);
@@ -66,7 +106,6 @@ App.prototype.init = function() {
             section.style.display = "none";
         }
     
-        console.log(this.todoList);
     }.bind(this))
 
     this.clickFilters()
@@ -74,9 +113,43 @@ App.prototype.init = function() {
 }
 
 
-App.prototype.LocalStorageSetItem = function(list) {
-    localStorage.setItem("todoList", JSON.stringify(list))
-    this.view.render(list);
+App.prototype.showActive = function() {
+    return  this.todoList.filter(function(todo) {
+        return !todo.checked;
+    })
+}
+
+App.prototype.showAll = function() {
+    let allTodos = this.todoList;
+    return allTodos;
+}
+
+App.prototype.showCompleted = function() {
+    return  this.todoList.filter(function(todo) {
+        return todo.checked;
+    })
+}
+
+
+App.prototype.LocalStorageSetItemAndRender = function() {
+    let completedList = this.showCompleted();
+    let activeList = this.showActive();
+    let allTodos = this.showAll();
+    let listToRender = [];
+    if(this.renderState === "Active") {
+        listToRender = [...activeList];
+    } else if (this.renderState === "Completed") {
+        listToRender = [...completedList];
+    } else {
+        listToRender = [...allTodos]
+    }
+    
+    localStorage.setItem("renderState", JSON.stringify(this.renderState))
+    localStorage.setItem("todoList", JSON.stringify(allTodos))
+    localStorage.setItem("completedList", JSON.stringify(completedList))
+    localStorage.setItem("activeList", JSON.stringify(activeList))
+
+    this.view.render(listToRender);
 }
 
 
@@ -88,7 +161,7 @@ App.prototype.addTodo = function(inputValue) {
         checked: todoInst.checked
     }
     this.todoList.unshift(todo)
-    this.LocalStorageSetItem(this.todoList)
+    this.LocalStorageSetItemAndRender()
    
 }
 
@@ -103,11 +176,10 @@ App.prototype.deleteTodo = function(todoId) {
         section.style.display = "none";
     }
     this.showBtnAllClear();
-    this.LocalStorageSetItem(this.todoList)
+    this.LocalStorageSetItemAndRender()
 }
 
 
-// doesn't work in right way
 App.prototype.toggleTodo = function(todoId) {
 
 
@@ -117,16 +189,14 @@ App.prototype.toggleTodo = function(todoId) {
                 ...todo,
                 checked: !todo.checked
             }
-            console.log('checked obj', obj)
             return obj
         } else {
-            console.log("another todo", todo)
             return todo;
         }
     })
     this.todoList = newList;
     this.showBtnAllClear();
-    this.LocalStorageSetItem(this.todoList)
+    this.LocalStorageSetItemAndRender()
     
 }
 
@@ -139,57 +209,51 @@ App.prototype.editTodo = function(textToEdit, todoId) {
                 text: textToEdit.trim(),
                 checked: todo.checked
             }
-            console.log(obj)
             return obj
         } else {
-            console.log(todo)
             return todo
         }
     })
-    this.LocalStorageSetItem(this.todoList)
+    this.LocalStorageSetItemAndRender()
 }
 
 
 App.prototype.clickFilters = function(){
     const filterBtns = document.querySelector("ul.filters");
     filterBtns.addEventListener("click", function(e) {
-        let filteredList = [];
         if(e.target.classList[0] === "left-btn") {
-            let activeList = this.showActive();
-            filteredList = [...activeList]
+            this.renderState = "Active"
         } else if(e.target.classList[0] === "center-btn") {
-            console.log('all')
-            filteredList = this.showAll();
+            this.renderState = "All"
         } else if (e.target.classList[0] === "right-btn") {
-            console.log('comp')
-            let completedList =  this.showCompleted();
-            filteredList = [...completedList]
+            this.renderState = "Completed"
         }
 
-        return this.view.render(filteredList);
+        this.LocalStorageSetItemAndRender()
 
     }.bind(this))
 
 }
 
 
-App.prototype.showActive = function() {
-    return this.todoList.filter(function(todo) {
-        return !todo.checked;
-    })
-}
 
-App.prototype.showAll = function() {
-    let allTodos = this.todoList;
-    return allTodos;
-}
+App.prototype.makeAllChecked = function() {
+    let checkAllBtn = document.getElementById("all-complete");
 
-App.prototype.showCompleted = function() {
-    return this.todoList.filter(function(todo) {
-        return todo.checked;
-    })
-}
+    checkAllBtn.addEventListener("click",  function() {
+        let newList = this.todoList.map(function(todo) {
+            return {
+                ...todo,
+                checked: true
+            }
+        })
 
+        this.todoList = newList;
+        this.showBtnAllClear();
+        this.LocalStorageSetItemAndRender();
+
+    }.bind(this))
+}
 
 App.prototype.clearAllComplete = function() {
 
@@ -197,7 +261,7 @@ App.prototype.clearAllComplete = function() {
         return !todo.checked
     })
 
-    this.LocalStorageSetItem(this.todoList, "all")
+    this.LocalStorageSetItemAndRender()
 }
 
 App.prototype.showBtnAllClear = function() {
@@ -221,7 +285,6 @@ App.prototype.showBtnAllClear = function() {
                 const wrapper = document.getElementById("mdl-wrapper");
                 wrapper.replaceChildren()
             }.bind(this)).catch(function(e) {
-                console.log(e)
                 const wrapper = document.getElementById("mdl-wrapper");
                 wrapper.replaceChildren()
             });

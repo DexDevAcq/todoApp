@@ -4,26 +4,30 @@ function View(rootElement, listners) {
     this.deleteTodo = listners.delTodo;
     this.toggleTodo = listners.toggleTodo;
     this.editTodo = listners.editTodo;
+    this.switchTodos = listners.switchTodos;
 }
 
 
-
-
-View.prototype.render = function(todos, flag){
+View.prototype.render = function(todos){
     this.clear();
     const fragment = document.createDocumentFragment();
-
-        todos.forEach(function(todo) {
-
+    let listItems = [];
+        todos.forEach(function(todo, index) {
             const li = document.createElement('li');
+
             const input = document.createElement('input');
+            const div = document.createElement("div");
+            div.classList.add("draggable");
     
     
             li.classList.add('todo');
+            div.setAttribute("draggable", "true");
+            li.setAttribute("data-index", index);
+            div.setAttribute("id", index)
             if(todo.checked){
                 li.classList.add("completed")
             }
-    
+   
     
             input.type = "checkbox";
             input.checked = todo.checked;
@@ -51,7 +55,6 @@ View.prototype.render = function(todos, flag){
                     const wrapper = document.getElementById("mdl-wrapper");
                     wrapper.replaceChildren()
                 }).catch(function(e) {
-                    console.log(e)
                     const wrapper = document.getElementById("mdl-wrapper");
                     wrapper.replaceChildren()
                 });
@@ -62,22 +65,96 @@ View.prototype.render = function(todos, flag){
             buttonEdit.classList.add("edit-btn")
             buttonEdit.insertAdjacentText("afterbegin", "Edit")
             buttonEdit.addEventListener("click", function() {
-               this.makeNewTodoInput(todo, li);
+               this.makeNewTodoInput(todo, div);
 
             }.bind(this))
 
             
-            li.appendChild(input);
-            li.appendChild(p);
-            li.appendChild(button);
-            li.appendChild(buttonEdit);
+            div.appendChild(input);
+            div.appendChild(p);
+            div.appendChild(button);
+            div.appendChild(buttonEdit);
+            li.appendChild(div)
             
             fragment.appendChild(li);
+            listItems.push(li)
     
             this.root.appendChild(fragment);
+
         }.bind(this))
-    
+
+    this.addListeners(listItems);
+
+
 }  
+
+
+
+View.prototype.addListeners = function(todoList) {
+    let dragStartIndex;
+    const todos = document.querySelectorAll(".draggable")
+    const todoListDragble = document.querySelectorAll(".todo-list li")
+    
+    let listItems = todoList;
+
+    function dragStart() {
+        dragStartIndex = +this.closest("li").getAttribute("data-index")
+    }
+
+    function dragEnter() {
+        this.classList.add("over")
+        this.firstChild.classList.add("over")
+    }
+    function dragLeave() {
+        this.classList.remove("over")
+        this.firstChild.classList.remove("over")
+    }
+    function dragOver(e) {
+        e.preventDefault();
+    }
+
+    let switchReference =  this.switchTodos;
+
+    function swapItems(fromIndex, toIndex) {
+        const divOne = listItems[fromIndex].querySelector(".draggable")
+        const divTwo = listItems[toIndex].querySelector(".draggable");
+        let idOne = +divOne.id;
+        let idTwo = +divTwo.id
+
+
+        listItems[fromIndex].appendChild(divTwo);
+        listItems[toIndex].appendChild(divOne);
+
+        switchReference(idOne, idTwo, listItems)
+    }
+
+
+    function dragDrop() {
+
+        const dragEndIndex = +this.getAttribute("data-index")
+        swapItems(dragStartIndex, dragEndIndex);
+        this.classList.remove("over")
+        this.firstChild.classList.remove("over")
+    }
+
+    
+   
+
+    todos.forEach(function(todo) {
+        todo.addEventListener("dragstart", dragStart)
+    })
+
+    todoListDragble.forEach(function(item) {
+        item.addEventListener("dragover", dragOver);
+        item.addEventListener("drop", dragDrop);
+        item.addEventListener("dragenter", dragEnter);
+        item.addEventListener("dragleave", dragLeave)
+    }.bind(this))
+
+
+}
+
+
 
 View.prototype.clear = function() {
     this.root.replaceChildren();
@@ -135,6 +212,7 @@ View.prototype.createModalWindow = function(todoId) {
 }
 
 
+
 View.prototype.makeNewTodoInput = function(todo, parentNode) {
     let newInput = document.createElement("input");
     let editForm = document.createElement("form");
@@ -147,11 +225,22 @@ View.prototype.makeNewTodoInput = function(todo, parentNode) {
    let [, p] = [...parentNode.getElementsByTagName("*")];
    parentNode.replaceChild(editForm, p);
    newInput.focus()
+
+   let timeOutId = setTimeout(function() {
+    document.body.addEventListener("click", function(e) {
+        p.textContent = todo.text
+        editForm.replaceWith(p)
+        clearTimeout(timeOutId)
+        document.body.removeEventListener("click", console.log('removed'))
+    })
+   }, 0)
+   
    editForm.addEventListener("submit", function(e) {
+    document.body.removeEventListener("click", console.log('removed'))
+    clearTimeout(timeOutId)
     const inputValue = document.getElementById("editInput").value;
     const text = inputValue.trim();
         if(text){
-            console.log("input: ", text)
             e.preventDefault()
             this.editTodo(inputValue, todo.id)
         } else {
@@ -159,7 +248,13 @@ View.prototype.makeNewTodoInput = function(todo, parentNode) {
             e.preventDefault()
         }
     }.bind(this))
-   console.log(editForm);
+  
 }
 
 export default View;
+
+
+
+
+
+

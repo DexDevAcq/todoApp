@@ -39,8 +39,8 @@ li p {
 }
 
 .wrapper {
-    width: 90%;
-    height: 90%;
+    width: 100%;
+    height: 100%;
     background: #3450A1;
 }
 
@@ -116,14 +116,14 @@ li p {
     margin-left: 20px;
 }
 
-.todo {
+.todo, .draggable {
     flex-direction: row;
     width: 400px;
     background: #041955;
     padding: 15px;
     display: flex;
     align-items: center;
-    margin: 10px;
+    margin: 5px;
     border-radius: 30px;
     color: white;
 }
@@ -281,3 +281,14 @@ li p {
 .modal-wrapper {
     position: absolute;
 }
+
+
+.addition-btns {
+    display: flex;
+    flex-direction: row;
+}
+
+/* .todo-list .dragging {
+    
+} */
+
